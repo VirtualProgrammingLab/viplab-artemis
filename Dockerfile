@@ -90,7 +90,6 @@ EXPOSE 8161 \
 WORKDIR /var/lib/artemis
 
 COPY broker.xml etc
-COPY docker-run.sh /
 
 USER artemis
 
