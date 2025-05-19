@@ -17,13 +17,13 @@
 
 # ActiveMQ Artemis
 
-FROM openjdk:11 as builder
+FROM eclipse-temurin:17-jre as builder
 LABEL maintainer="Per Pascal Seeland <pascal.seeland@tik.uni-stuttgart.de"
 # Make sure pipes are considered to determine success, see: https://github.com/hadolint/hadolint/wiki/DL4006
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 WORKDIR /opt
 
-ENV ACTIVEMQ_ARTEMIS_VERSION 2.23.0
+ENV ACTIVEMQ_ARTEMIS_VERSION 2.41.0
 
 ENV ARTEMIS_USER artemis
 ENV ARTEMIS_PASSWORD artemis
@@ -35,15 +35,14 @@ ENV CONFIG_PATH ${BROKER_HOME}/etc
 
 
 # add user and group for artemis
-RUN groupadd --gid 1000 -r artemis && useradd -r -u 1000 -g artemis artemis \
- && apt-get -qq -o=Dpkg::Use-Pty=0 update && \
+RUN apt-get -qq -o=Dpkg::Use-Pty=0 update && \
     apt-get -qq -o=Dpkg::Use-Pty=0 install -y --no-install-recommends \
-    libaio1 wget && \
+    libaio1t64 wget && \
     rm -rf /var/lib/apt/lists/*
 
 USER root
 
-RUN mkdir /var/lib/artemis && chown -R artemis.artemis /var/lib/artemis
+RUN mkdir /var/lib/artemis && chown -R ubuntu.ubuntu /var/lib/artemis
 RUN  wget "https://repository.apache.org/content/repositories/releases/org/apache/activemq/apache-artemis/${ACTIVEMQ_ARTEMIS_VERSION}/apache-artemis-${ACTIVEMQ_ARTEMIS_VERSION}-bin.tar.gz" && \
      wget "https://repository.apache.org/content/repositories/releases/org/apache/activemq/apache-artemis/${ACTIVEMQ_ARTEMIS_VERSION}/apache-artemis-${ACTIVEMQ_ARTEMIS_VERSION}-bin.tar.gz.asc" && \
      wget "http://apache.org/dist/activemq/KEYS" && \
@@ -53,32 +52,28 @@ RUN  wget "https://repository.apache.org/content/repositories/releases/org/apach
      ln -s "/opt/apache-artemis-${ACTIVEMQ_ARTEMIS_VERSION}" "/opt/apache-artemis" && \
      rm -f "apache-artemis-${ACTIVEMQ_ARTEMIS_VERSION}-bin.tar.gz" "KEYS" "apache-artemis-${ACTIVEMQ_ARTEMIS_VERSION}-bin.tar.gz.asc"; 
 
-RUN rm -r  /opt/apache-artemis-${ACTIVEMQ_ARTEMIS_VERSION}/web/{api,examples,user-manual,hacking-guide,migration-guide} && rm -r  /opt/apache-artemis-${ACTIVEMQ_ARTEMIS_VERSION}/examples
-
-USER artemis
+USER ubuntu
 WORKDIR /var/lib/artemis
 
 RUN /opt/apache-artemis-${ACTIVEMQ_ARTEMIS_VERSION}/bin/artemis create ${CREATE_ARGUMENTS} .
 
 
-FROM eclipse-temurin:11-jre
+FROM eclipse-temurin:17-jre
 LABEL maintainer="Pascal Seeland <pascal.seeland@tik.uni-stuttgart.de>"
-ENV ACTIVEMQ_ARTEMIS_VERSION 2.23.0
+ENV ACTIVEMQ_ARTEMIS_VERSION=2.41.0
 ENV ACTIVEMQ_ARTEMIS_VERSION=$ACTIVEMQ_ARTEMIS_VERSION
-ENV BROKER_HOME /var/lib/artemis
-ENV CONFIG_PATH ${BROKER_HOME}/etc
+ENV BROKER_HOME=/var/lib/artemis
+ENV CONFIG_PATH=${BROKER_HOME}/etc
 
 # add user and group for artemis
-RUN addgroup --gid 1000 --system artemis && adduser -u 1000 --system --ingroup artemis artemis \
- && apt-get -qq -o=Dpkg::Use-Pty=0 update && \
-    apt-get -qq -o=Dpkg::Use-Pty=0 install -y libaio1 && \
+RUN apt-get -qq -o=Dpkg::Use-Pty=0 update && \
+    apt-get -qq -o=Dpkg::Use-Pty=0 install -y --no-install-recommends libaio1t64 && \
     rm -rf /var/lib/apt/lists/*
 
-RUN mkdir /var/lib/artemis && chown -R artemis.artemis /var/lib/artemis
-USER artemis
+RUN mkdir /var/lib/artemis && chown -R ubuntu.ubuntu /var/lib/artemis
+USER ubuntu
 COPY --from=builder "/opt/apache-artemis-${ACTIVEMQ_ARTEMIS_VERSION}" "/opt/apache-artemis-${ACTIVEMQ_ARTEMIS_VERSION}"
 COPY --from=builder "/var/lib/artemis" "/var/lib/artemis"
-#COPY --from=builder "/opt/jmx-exporter" "/opt/jmx-exporter"
 
 # Web Server
 EXPOSE 8161 \
@@ -91,7 +86,7 @@ WORKDIR /var/lib/artemis
 
 COPY broker.xml etc
 
-USER artemis
+USER ubuntu
 
 # Expose some outstanding folders
 VOLUME ["/var/lib/artemis"]
