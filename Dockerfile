@@ -1,3 +1,5 @@
+# syntax=docker/dockerfile:1
+# check=skip=SecretsUsedInArgOrEnv
 # Licensed to the Apache Software Foundation (ASF) under one
 # or more contributor license agreements.  See the NOTICE file
 # distributed with this work for additional information
@@ -17,21 +19,21 @@
 
 # ActiveMQ Artemis
 
-FROM eclipse-temurin:21-jre as builder
+FROM eclipse-temurin:21-jre AS builder
 LABEL maintainer="Per Pascal Seeland <pascal.seeland@tik.uni-stuttgart.de"
 # Make sure pipes are considered to determine success, see: https://github.com/hadolint/hadolint/wiki/DL4006
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 WORKDIR /opt
 
-ENV ACTIVEMQ_ARTEMIS_VERSION 2.42.0
+ENV ACTIVEMQ_ARTEMIS_VERSION=2.42.0
 
-ENV ARTEMIS_USER artemis
-ENV ARTEMIS_PASSWORD artemis
-ENV ANONYMOUS_LOGIN false
-ENV CREATE_ARGUMENTS --user ${ARTEMIS_USER} --password ${ARTEMIS_PASSWORD} --silent --http-host 0.0.0.0 --relax-jolokia
+ENV ARTEMIS_USER=artemis
+ENV ARTEMIS_PASSWORD=artemis
+ENV ANONYMOUS_LOGIN=false
+ENV CREATE_ARGUMENTS="--user ${ARTEMIS_USER} --password ${ARTEMIS_PASSWORD} --silent --http-host 0.0.0.0 --relax-jolokia"
 
-ENV BROKER_HOME /var/lib/artemis
-ENV CONFIG_PATH ${BROKER_HOME}/etc
+ENV BROKER_HOME=/var/lib/artemis
+ENV CONFIG_PATH=${BROKER_HOME}/etc
 
 
 # add user and group for artemis
