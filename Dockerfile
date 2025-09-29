@@ -19,7 +19,7 @@
 
 # ActiveMQ Artemis
 
-FROM eclipse-temurin:21-jre AS builder
+FROM eclipse-temurin:25-jre AS builder
 LABEL maintainer="Per Pascal Seeland <pascal.seeland@tik.uni-stuttgart.de"
 # Make sure pipes are considered to determine success, see: https://github.com/hadolint/hadolint/wiki/DL4006
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
@@ -60,7 +60,7 @@ WORKDIR /var/lib/artemis
 RUN /opt/apache-artemis-${ACTIVEMQ_ARTEMIS_VERSION}/bin/artemis create ${CREATE_ARGUMENTS} .
 
 
-FROM eclipse-temurin:21-jre
+FROM eclipse-temurin:25-jre
 LABEL maintainer="Pascal Seeland <pascal.seeland@tik.uni-stuttgart.de>"
 ENV ACTIVEMQ_ARTEMIS_VERSION=2.42.0
 ENV ACTIVEMQ_ARTEMIS_VERSION=$ACTIVEMQ_ARTEMIS_VERSION
