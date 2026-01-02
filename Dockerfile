@@ -25,7 +25,7 @@ LABEL maintainer="Per Pascal Seeland <pascal.seeland@tik.uni-stuttgart.de"
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 WORKDIR /opt
 
-ENV ACTIVEMQ_ARTEMIS_VERSION=2.42.0
+ENV ACTIVEMQ_ARTEMIS_VERSION=2.44.0
 
 ENV ARTEMIS_USER=artemis
 ENV ARTEMIS_PASSWORD=artemis
@@ -39,15 +39,15 @@ ENV CONFIG_PATH=${BROKER_HOME}/etc
 # add user and group for artemis
 RUN apt-get -qq -o=Dpkg::Use-Pty=0 update && \
     apt-get -qq -o=Dpkg::Use-Pty=0 install -y --no-install-recommends \
-    libaio1t64 wget && \
+    libaio1t64 wget gpg gpg-agent&& \
     rm -rf /var/lib/apt/lists/*
 
 USER root
 
 RUN mkdir /var/lib/artemis && chown -R ubuntu.ubuntu /var/lib/artemis
-RUN  wget "https://repository.apache.org/content/repositories/releases/org/apache/activemq/apache-artemis/${ACTIVEMQ_ARTEMIS_VERSION}/apache-artemis-${ACTIVEMQ_ARTEMIS_VERSION}-bin.tar.gz" && \
-     wget "https://repository.apache.org/content/repositories/releases/org/apache/activemq/apache-artemis/${ACTIVEMQ_ARTEMIS_VERSION}/apache-artemis-${ACTIVEMQ_ARTEMIS_VERSION}-bin.tar.gz.asc" && \
-     wget "http://apache.org/dist/activemq/KEYS" && \
+RUN  wget "https://dlcdn.apache.org/activemq/activemq-artemis/${ACTIVEMQ_ARTEMIS_VERSION}/apache-artemis-${ACTIVEMQ_ARTEMIS_VERSION}-bin.tar.gz" && \
+     wget "https://dlcdn.apache.org/activemq/activemq-artemis/${ACTIVEMQ_ARTEMIS_VERSION}/apache-artemis-${ACTIVEMQ_ARTEMIS_VERSION}-bin.tar.gz.asc" && \
+     wget "http://apache.org/dist/artemis/KEYS" && \
      gpg --no-tty --import "KEYS" && \
      gpg --no-tty "apache-artemis-${ACTIVEMQ_ARTEMIS_VERSION}-bin.tar.gz.asc" && \
      tar xfz "apache-artemis-${ACTIVEMQ_ARTEMIS_VERSION}-bin.tar.gz" && \
@@ -62,7 +62,7 @@ RUN /opt/apache-artemis-${ACTIVEMQ_ARTEMIS_VERSION}/bin/artemis create ${CREATE_
 
 FROM eclipse-temurin:25-jre
 LABEL maintainer="Pascal Seeland <pascal.seeland@tik.uni-stuttgart.de>"
-ENV ACTIVEMQ_ARTEMIS_VERSION=2.42.0
+ENV ACTIVEMQ_ARTEMIS_VERSION=2.44.0
 ENV ACTIVEMQ_ARTEMIS_VERSION=$ACTIVEMQ_ARTEMIS_VERSION
 ENV BROKER_HOME=/var/lib/artemis
 ENV CONFIG_PATH=${BROKER_HOME}/etc
