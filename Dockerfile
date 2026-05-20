@@ -25,7 +25,7 @@ LABEL maintainer="Per Pascal Seeland <pascal.seeland@tik.uni-stuttgart.de"
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 WORKDIR /opt
 
-ENV ACTIVEMQ_ARTEMIS_VERSION=2.44.0
+ENV ACTIVEMQ_ARTEMIS_VERSION=2.54.0
 
 ENV ARTEMIS_USER=artemis
 ENV ARTEMIS_PASSWORD=artemis
@@ -43,10 +43,9 @@ RUN apt-get -qq -o=Dpkg::Use-Pty=0 update && \
     rm -rf /var/lib/apt/lists/*
 
 USER root
-
 RUN mkdir /var/lib/artemis && chown -R ubuntu.ubuntu /var/lib/artemis
-RUN  wget "https://dlcdn.apache.org/activemq/activemq-artemis/${ACTIVEMQ_ARTEMIS_VERSION}/apache-artemis-${ACTIVEMQ_ARTEMIS_VERSION}-bin.tar.gz" && \
-     wget "https://dlcdn.apache.org/activemq/activemq-artemis/${ACTIVEMQ_ARTEMIS_VERSION}/apache-artemis-${ACTIVEMQ_ARTEMIS_VERSION}-bin.tar.gz.asc" && \
+RUN  wget "https://dlcdn.apache.org/artemis/artemis/${ACTIVEMQ_ARTEMIS_VERSION}/apache-artemis-${ACTIVEMQ_ARTEMIS_VERSION}-bin.tar.gz" && \
+     wget "https://dlcdn.apache.org/artemis/artemis/${ACTIVEMQ_ARTEMIS_VERSION}/apache-artemis-${ACTIVEMQ_ARTEMIS_VERSION}-bin.tar.gz.asc" && \
      wget "http://apache.org/dist/artemis/KEYS" && \
      gpg --no-tty --import "KEYS" && \
      gpg --no-tty "apache-artemis-${ACTIVEMQ_ARTEMIS_VERSION}-bin.tar.gz.asc" && \
@@ -62,7 +61,7 @@ RUN /opt/apache-artemis-${ACTIVEMQ_ARTEMIS_VERSION}/bin/artemis create ${CREATE_
 
 FROM eclipse-temurin:25-jre
 LABEL maintainer="Pascal Seeland <pascal.seeland@tik.uni-stuttgart.de>"
-ENV ACTIVEMQ_ARTEMIS_VERSION=2.44.0
+ENV ACTIVEMQ_ARTEMIS_VERSION=2.54.0
 ENV ACTIVEMQ_ARTEMIS_VERSION=$ACTIVEMQ_ARTEMIS_VERSION
 ENV BROKER_HOME=/var/lib/artemis
 ENV CONFIG_PATH=${BROKER_HOME}/etc
