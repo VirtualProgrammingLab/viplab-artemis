@@ -25,7 +25,7 @@ LABEL maintainer="Per Pascal Seeland <pascal.seeland@tik.uni-stuttgart.de"
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 WORKDIR /opt
 
-ENV ACTIVEMQ_ARTEMIS_VERSION=2.54.0
+ENV ACTIVEMQ_ARTEMIS_VERSION=2.57.0
 
 ENV ARTEMIS_USER=artemis
 ENV ARTEMIS_PASSWORD=artemis
@@ -61,7 +61,7 @@ RUN /opt/apache-artemis-${ACTIVEMQ_ARTEMIS_VERSION}/bin/artemis create ${CREATE_
 
 FROM eclipse-temurin:25-jre
 LABEL maintainer="Pascal Seeland <pascal.seeland@tik.uni-stuttgart.de>"
-ENV ACTIVEMQ_ARTEMIS_VERSION=2.54.0
+ENV ACTIVEMQ_ARTEMIS_VERSION=2.57.0
 ENV ACTIVEMQ_ARTEMIS_VERSION=$ACTIVEMQ_ARTEMIS_VERSION
 ENV BROKER_HOME=/var/lib/artemis
 ENV CONFIG_PATH=${BROKER_HOME}/etc
